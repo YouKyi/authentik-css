@@ -1,93 +1,204 @@
-# Authentik-css
+# Authentik Glassmorphism Theme
 
+A premium glassmorphism CSS theme for [Authentik](https://goauthentik.io/) 2026.x+ — the open-source identity provider.
 
+Translucent glass surfaces, dynamic blur, and subtle light effects that make your SSO portal look stunning.
 
-## Getting started
+## Preview
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+| Login | Library |
+|-------|---------|
+| ![Login page](screenshots/login.png) | ![Library page](screenshots/library.png) |
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Features
 
-## Add your files
+- **Full glassmorphism** — blur, transparency, luminous borders, specular highlights
+- **Login page** — glass container, styled inputs, animated entrance
+- **Application library** — glass cards with hover effects, search bar, group headers
+- **SSO buttons with brand colors** — Discord (purple), Plex (amber), Security Key (cyan), and a template to add more
+- **Consent flows** — green/red glass buttons for grant/deny
+- **Themeable** — change 11 CSS variables to match any background color
+- **5 color presets** — Blue, Red, Green, Purple, Neutral
+- **Admin-safe** — glass effects are scoped to user-facing pages, admin interface stays untouched
+- **Accessible** — `prefers-reduced-motion`, `prefers-contrast`, `prefers-reduced-transparency` support
+- **Responsive** — mobile-optimized with touch-friendly targets
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Quick Start
+
+### 1. Copy the CSS
+
+Copy the contents of [`glassmorphism.css`](glassmorphism.css) to your clipboard.
+
+### 2. Paste into Authentik
+
+Go to **Admin** > **System** > **Brands** > select your brand > **Branding** > **Custom CSS** field.
+
+Paste the entire CSS content and click **Update**.
+
+### 3. Set a background image
+
+In the same brand settings, go to **Other global settings** > **Attributes** and set:
+
+```yaml
+settings:
+  theme:
+    base: dark
+    background: "background: url('https://your-cdn.com/background.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;"
+```
+
+### 4. Reload
+
+Hard-refresh your login page (`Ctrl+Shift+R` / `Cmd+Shift+R`). The glassmorphism effect should be visible immediately.
+
+## Customization
+
+### Change the color scheme
+
+The theme is controlled by **11 CSS variables** at the top of the file. Edit them to match your background:
+
+```css
+/* THEME COLOR CONFIG — Edit these values to change the theme */
+--theme-tint: 15, 23, 52;        /* Glass surface tint (RGB) */
+--theme-accent: 59, 130, 246;    /* Buttons, focus rings (RGB) */
+--theme-border: 100, 140, 255;   /* Glass edge color (RGB) */
+```
+
+### Color presets
+
+Uncomment one of the preset blocks in the CSS:
+
+| Preset | `--theme-tint` | `--theme-accent` | Best for |
+|--------|---------------|-----------------|----------|
+| **Blue** (default) | `15, 23, 52` | `59, 130, 246` | Blue/tech backgrounds |
+| **Red** | `52, 15, 20` | `239, 68, 68` | Warm/red backgrounds |
+| **Green** | `15, 42, 30` | `16, 185, 129` | Nature/green backgrounds |
+| **Purple** | `35, 15, 52` | `139, 92, 246` | Cyberpunk/violet backgrounds |
+| **Neutral** | `20, 20, 25` | `139, 92, 246` | Any background (gray glass) |
+
+### Add SSO provider colors
+
+The theme includes brand-colored buttons for Discord, Plex, and Security Key. To add more providers, find the **SSO BUTTON TEMPLATE** comment in the CSS and copy the block:
+
+```css
+.pf-c-button.pf-m-primary.pf-m-block[name="source-{SLUG}"] {
+  background: rgba({R}, {G}, {B}, 0.25) !important;
+  border: 1px solid rgba({R}, {G}, {B}, 0.40) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  background-image: none !important;
+}
+.pf-c-button.pf-m-primary.pf-m-block[name="source-{SLUG}"]:hover {
+  background: rgba({R}, {G}, {B}, 0.40) !important;
+  border-color: rgba({R}, {G}, {B}, 0.55) !important;
+  box-shadow: 0 0 24px rgba({R}, {G}, {B}, 0.25) !important;
+  transform: translateY(-1px) !important;
+  background-image: none !important;
+}
+```
+
+Replace `{SLUG}` with your source's slug (e.g., `source-google`) and `{R}, {G}, {B}` with the provider's brand color.
+
+**Finding the slug:** Open your login page, press F12, and run:
+```javascript
+document.querySelector('ak-flow-executor').shadowRoot
+  .querySelector('ak-stage-identification').shadowRoot
+  .querySelectorAll('button.source-button, a.pf-c-button[name]')
+  .forEach(b => console.log(b.getAttribute('name'), b.textContent.trim()));
+```
+
+**Common provider colors:**
+
+| Provider | R, G, B |
+|----------|---------|
+| Google | `66, 133, 244` |
+| Microsoft | `0, 164, 239` |
+| GitHub | `110, 64, 201` |
+| GitLab | `252, 109, 38` |
+| Apple | `162, 170, 173` |
+| Facebook | `24, 119, 242` |
+| Slack | `74, 21, 75` |
+| Okta | `0, 125, 193` |
+
+### Background filter tips
+
+You can add CSS filters to your background image for better glass effects:
+
+```yaml
+background: "background: url('...'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; filter: blur(2px) brightness(0.85) saturate(1.3);"
+```
+
+| Filter | Effect |
+|--------|--------|
+| `blur(2px)` | Softens the background, glass stands out more |
+| `brightness(0.85)` | Darkens slightly for better text contrast |
+| `saturate(1.3)` | Richer colors visible through the glass |
+
+## How it works
+
+Authentik uses **Web Components with Shadow DOM** (Lit + PatternFly 4). Custom CSS from the brand settings is adopted into each component's shadow root. This theme works by:
+
+1. **CSS Variables** on `:root, :host` — cascade through all shadow boundaries
+2. **Direct selectors** without `.pf-c-login` prefix — work inside each shadow root where CSS is adopted
+3. **`::part()` selectors** — style library cards from the parent shadow root
+4. **`:host()` scoping** — login stage selectors prevent glass from leaking into admin
+
+### Shadow DOM structure (login)
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.int.youkyi.net/YouKyi-Infra/authentik-css.git
-git branch -M main
-git push -uf origin main
+ak-flow-executor [.pf-c-login host]
+  └─ shadowRoot
+      ├─ .pf-c-login__main        ← glass container
+      └─ ak-stage-identification
+          └─ shadowRoot
+              ├─ inputs, buttons   ← glass form controls
+              └─ ak-flow-card
+                  └─ shadowRoot    ← styled via CSS variable cascade
 ```
 
-## Integrate with your tools
+### Shadow DOM structure (library)
 
-* [Set up project integrations](https://gitlab.int.youkyi.net/YouKyi-Infra/authentik-css/-/settings/integrations)
+```
+ak-interface-user
+  └─ shadowRoot
+      ├─ .pf-c-page__header       ← glass header
+      └─ ak-library-impl
+          └─ shadowRoot            ← styled via ::part()
+              ├─ cards, search, groups
+```
 
-## Collaborate with your team
+## Compatibility
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+| Authentik | Status |
+|-----------|--------|
+| 2026.2.x | Tested |
+| 2026.1.x | Should work |
+| 2025.x | Not tested, may need adjustments |
+| < 2025 | Likely incompatible (different Shadow DOM structure) |
 
-## Test and Deploy
+**Browser support:** Chrome 105+, Firefox 103+, Safari 15.4+, Edge 105+ (requires `backdrop-filter` support).
 
-Use the built-in continuous integration in GitLab.
+## Files
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+| File | Description |
+|------|-------------|
+| `glassmorphism.css` | Main theme file — copy this into your brand CSS |
+| `docs/architecture.md` | Deep dive into Authentik's Shadow DOM and CSS strategy |
+| `docs/sso-colors.md` | Complete guide for adding SSO provider colors |
+| `docs/deployment.md` | Deployment methods (UI, API, automation) |
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Contributions are welcome!
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Before submitting a PR:
+- Test on a real Authentik 2026.x instance
+- Verify admin interface is not affected
+- Check login, library, and consent pages
+- Test with `prefers-reduced-motion` enabled
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+[MIT](LICENSE)
+
+## Credits
+
+Created by [YouKyi](https://youkyi.net) with assistance from Claude Code.
