@@ -1,0 +1,1093 @@
+/* =================================================================
+   AUTHENTIK GLASSMORPHISM THEME
+   https://github.com/youkyi/authentik-glassmorphism
+
+   Compatible: Authentik 2026.x+
+   License: MIT
+
+   QUICK START:
+   1. Copy this file into System > Brands > Custom CSS
+   2. Customize colors in "THEME COLOR CONFIG" below
+   3. Set the background image in Brand > Attributes
+
+   COLOR PRESETS (edit the 11 variables below) :
+   - Blue (default) : --theme-tint: 15, 23, 52;
+   - Red / warm  : --theme-tint: 52, 15, 20;
+   - Green / nature  : --theme-tint: 15, 42, 30;
+   - Purple / cyber  : --theme-tint: 35, 15, 52;
+   - Neutral (any background) : --theme-tint: 20, 20, 25;
+
+   ARCHITECTURE:
+   - CSS variables cascade through all Shadow DOM boundaries
+   - Selectors scoped to login stages (no admin impact)
+   - ::part() for library cards
+   ================================================================= */
+
+
+/* =================================================================
+   SECTION 1: VARIABLES CSS CUSTOM PROPERTIES
+   ================================================================= */
+
+:root, :host {
+
+  /* =============================================================
+     THEME COLOR CONFIG — Edit these values to change the theme
+     ============================================================= */
+
+  /* Glass tint (RGB without alpha) — base for all surfaces */
+  --theme-tint: 15, 23, 52;
+  /* Glass tint, lighter variant (L2 surfaces, hovers) */
+  --theme-tint-l2: 20, 30, 70;
+  /* Glass tint, lightest variant (L3 surfaces, inputs) */
+  --theme-tint-l3: 30, 45, 90;
+  /* Dark tint (header, drawers, dropdowns) */
+  --theme-tint-dark: 10, 15, 30;
+
+  /* Accent color for buttons and focus (RGB) */
+  --theme-accent: 59, 130, 246;
+  /* Darker accent — hover states */
+  --theme-accent-dark: 37, 99, 235;
+
+  /* Glass border color (RGB) */
+  --theme-border: 100, 140, 255;
+  /* Bright glass border — hover/focus */
+  --theme-border-bright: 120, 160, 255;
+
+  /* Link color */
+  --theme-link: 120, 170, 255;
+
+  /* Secondary text tint (RGB) */
+  --theme-text-tint: 200, 210, 230;
+  /* Muted text tint (RGB) */
+  --theme-text-muted-tint: 160, 175, 200;
+
+  /* --- PRESETS (uncomment a block) ---
+
+     Blue (current, for blue background) :
+     --theme-tint: 15, 23, 52;
+     --theme-tint-l2: 20, 30, 70;
+     --theme-tint-l3: 30, 45, 90;
+     --theme-tint-dark: 10, 15, 30;
+     --theme-accent: 59, 130, 246;
+     --theme-accent-dark: 37, 99, 235;
+     --theme-border: 100, 140, 255;
+     --theme-border-bright: 120, 160, 255;
+     --theme-link: 120, 170, 255;
+     --theme-text-tint: 200, 210, 230;
+     --theme-text-muted-tint: 160, 175, 200;
+
+     Red (for red/warm background) :
+     --theme-tint: 52, 15, 20;
+     --theme-tint-l2: 70, 20, 28;
+     --theme-tint-l3: 90, 35, 45;
+     --theme-tint-dark: 30, 10, 15;
+     --theme-accent: 239, 68, 68;
+     --theme-accent-dark: 220, 38, 38;
+     --theme-border: 255, 100, 120;
+     --theme-border-bright: 255, 130, 150;
+     --theme-link: 255, 140, 150;
+     --theme-text-tint: 230, 210, 210;
+     --theme-text-muted-tint: 200, 170, 175;
+
+     Green (for green/nature background) :
+     --theme-tint: 15, 42, 30;
+     --theme-tint-l2: 20, 55, 40;
+     --theme-tint-l3: 30, 75, 55;
+     --theme-tint-dark: 10, 25, 18;
+     --theme-accent: 16, 185, 129;
+     --theme-accent-dark: 5, 150, 105;
+     --theme-border: 100, 255, 180;
+     --theme-border-bright: 130, 255, 200;
+     --theme-link: 120, 255, 190;
+     --theme-text-tint: 210, 230, 220;
+     --theme-text-muted-tint: 170, 200, 185;
+
+     Purple (for violet/cyberpunk background) :
+     --theme-tint: 35, 15, 52;
+     --theme-tint-l2: 48, 20, 70;
+     --theme-tint-l3: 65, 35, 90;
+     --theme-tint-dark: 22, 10, 30;
+     --theme-accent: 139, 92, 246;
+     --theme-accent-dark: 109, 40, 217;
+     --theme-border: 180, 140, 255;
+     --theme-border-bright: 200, 160, 255;
+     --theme-link: 190, 150, 255;
+     --theme-text-tint: 220, 210, 230;
+     --theme-text-muted-tint: 185, 170, 200;
+
+     Neutral (universal, any background) :
+     --theme-tint: 20, 20, 25;
+     --theme-tint-l2: 28, 28, 35;
+     --theme-tint-l3: 40, 40, 50;
+     --theme-tint-dark: 12, 12, 16;
+     --theme-accent: 139, 92, 246;
+     --theme-accent-dark: 109, 40, 217;
+     --theme-border: 255, 255, 255;
+     --theme-border-bright: 255, 255, 255;
+     --theme-link: 200, 180, 255;
+     --theme-text-tint: 220, 220, 225;
+     --theme-text-muted-tint: 180, 180, 190;
+  */
+
+
+  /* =============================================================
+     Glass derived values — DO NOT EDIT, change the values above
+     ============================================================= */
+
+  /* Glass Layer System */
+  --glass-l1-bg: rgba(var(--theme-tint), 0.55);
+  --glass-l1-blur: blur(20px) saturate(1.5);
+  --glass-l2-bg: rgba(var(--theme-tint-l2), 0.45);
+  --glass-l2-blur: blur(16px) saturate(1.4);
+  --glass-l3-bg: rgba(var(--theme-tint-l3), 0.30);
+  --glass-l3-blur: blur(12px) saturate(1.2);
+
+  /* Borders */
+  --glass-border: 1px solid rgba(var(--theme-border), 0.15);
+  --glass-border-hover: 1px solid rgba(var(--theme-border-bright), 0.30);
+  --glass-border-focus: 1px solid rgba(var(--theme-border-bright), 0.50);
+
+  /* Radius */
+  --glass-radius: 20px;
+  --glass-radius-md: 12px;
+  --glass-radius-sm: 10px;
+
+  /* Shadows */
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.40), 0 0 30px rgba(var(--theme-accent), 0.15);
+  --glass-shadow-container: 0 12px 48px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --glass-inset-glow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --glass-text: rgba(255, 255, 255, 0.95);
+  --glass-text-secondary: rgba(var(--theme-text-tint), 0.80);
+  --glass-text-muted: rgba(var(--theme-text-muted-tint), 0.55);
+  --glass-text-link: rgba(var(--theme-link), 0.90);
+
+  /* Accent */
+  --glass-accent: rgb(var(--theme-accent));
+  --glass-accent-gradient: linear-gradient(135deg, rgba(var(--theme-accent), 0.45), rgba(var(--theme-accent-dark), 0.55));
+
+  /* SSO Provider Colors (brand-specific — do not variablize) */
+  --sso-discord: 88, 101, 242;
+  --sso-plex: 229, 160, 13;
+  --sso-webauthn: 0, 180, 216;
+
+  /* Consent (semantic — do not variablize) */
+  --consent-grant: 16, 185, 129;
+  --consent-deny: 239, 68, 68;
+
+  /* Transitions */
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* PatternFly Variable Overrides (cascades through shadow DOM) */
+  --pf-c-login__main--BackgroundColor: transparent !important;
+  --pf-c-login--BackgroundColor: transparent !important;
+  --pf-c-card--BackgroundColor: var(--glass-l2-bg) !important;
+  --pf-c-card--BoxShadow: var(--glass-shadow) !important;
+  --pf-global--BorderRadius--sm: var(--glass-radius);
+  --pf-c-login__main-header--Color: var(--glass-text) !important;
+  --pf-c-login__main-body--Color: var(--glass-text) !important;
+  --pf-c-login__main-footer--Color: var(--glass-text) !important;
+
+  /* Scrollbar */
+  --sb-size: 10px;
+  --sb-radius: 12px;
+  --sb-track: rgba(255, 255, 255, 0.04);
+  --sb-thumb: rgba(255, 255, 255, 0.20);
+  --sb-thumb-hover: rgba(255, 255, 255, 0.35);
+  --sb-thumb-active: rgba(255, 255, 255, 0.50);
+}
+
+
+/* =================================================================
+   SECTION 2: LOGIN PAGE - FLOW EXECUTOR SHADOW (Level 1)
+   Selectors WITHOUT .pf-c-login prefix (host is invisible)
+   ================================================================= */
+
+/* Main login container (replaces dead .pf-c-login__container) */
+.pf-c-login__main {
+  background: var(--glass-l1-bg) !important;
+  backdrop-filter: var(--glass-l1-blur) !important;
+  -webkit-backdrop-filter: var(--glass-l1-blur) !important;
+  border: var(--glass-border) !important;
+  border-radius: var(--glass-radius) !important;
+  box-shadow: var(--glass-shadow-container) !important;
+  overflow: hidden !important;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both !important;
+}
+
+/* Login header (logo) */
+.pf-c-login__header {
+  background: transparent !important;
+}
+
+/* Login footer - visible but subtle */
+.pf-c-login__footer {
+  opacity: 0.4 !important;
+  transition: opacity var(--transition-normal) !important;
+}
+
+.pf-c-login__footer:hover {
+  opacity: 0.7 !important;
+}
+
+/* Footer links - force horizontal layout */
+ak-brand-links .pf-c-list.pf-m-inline,
+.pf-c-list.pf-m-inline[part="list"] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px 24px !important;
+  color: rgba(var(--theme-text-muted-tint), 0.45) !important;
+  font-size: 0.75rem !important;
+  grid-template-columns: unset !important;
+  grid-template-rows: unset !important;
+}
+
+.pf-c-login__footer a {
+  color: rgba(var(--theme-link), 0.50) !important;
+  text-decoration: none !important;
+  transition: color var(--transition-fast) !important;
+}
+
+.pf-c-login__footer a:hover {
+  color: rgba(var(--theme-link), 0.80) !important;
+}
+
+/* Logo drop shadow */
+.pf-c-brand {
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4)) !important;
+}
+
+
+/* =================================================================
+   SECTION 3: LOGIN PAGE - STAGE SHADOW (Level 2)
+   Inputs, buttons, form controls - without .pf-c-login prefix
+   ================================================================= */
+
+/* Login input fields ONLY — targeted by name to avoid affecting admin */
+input[name="uidField"],
+input[name="password"],
+input[name="code"],
+input[name="token"],
+:host(ak-stage-identification) input.pf-c-form-control,
+:host(ak-stage-password) input.pf-c-form-control,
+:host(ak-stage-consent) input.pf-c-form-control,
+:host(ak-stage-email) input.pf-c-form-control,
+:host(ak-stage-prompt) input.pf-c-form-control,
+:host(ak-stage-authenticator-validate) input.pf-c-form-control {
+  background: var(--glass-l3-bg) !important;
+  backdrop-filter: var(--glass-l3-blur) !important;
+  -webkit-backdrop-filter: var(--glass-l3-blur) !important;
+  border: 1px solid rgba(var(--theme-border), 0.18) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  color: var(--glass-text) !important;
+  padding: 12px 16px !important;
+  font-size: 0.9375rem !important;
+  min-height: 44px !important;
+  transition: all var(--transition-normal) !important;
+  outline: none !important;
+  box-shadow: var(--glass-inset-glow) !important;
+}
+
+input[name="uidField"]:focus,
+input[name="password"]:focus,
+input[name="code"]:focus,
+input[name="token"]:focus,
+:host(ak-stage-identification) input.pf-c-form-control:focus,
+:host(ak-stage-password) input.pf-c-form-control:focus,
+:host(ak-stage-prompt) input.pf-c-form-control:focus {
+  border-color: rgba(var(--theme-border-bright), 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(var(--theme-accent), 0.15), 0 0 20px rgba(var(--theme-accent), 0.10) !important;
+  background: rgba(var(--theme-tint-l3), 0.40) !important;
+}
+
+.pf-c-form-control::placeholder,
+input::placeholder {
+  color: rgba(var(--theme-text-muted-tint), 0.45) !important;
+}
+
+/* Hide PF default border-bottom on inputs */
+.pf-c-form-control[type="text"],
+.pf-c-form-control[type="password"],
+.pf-c-form-control[type="email"] {
+  --pf-c-form-control--BorderBottomColor: transparent !important;
+  border-bottom-width: 1px !important;
+}
+
+/* Labels */
+.pf-c-form__label,
+.pf-c-form__label-text {
+  color: rgba(var(--theme-text-tint), 0.85) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Primary button - Log in */
+.pf-c-button.pf-m-primary.pf-m-block {
+  background: var(--glass-accent-gradient) !important;
+  backdrop-filter: blur(10px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3) !important;
+  border: 1px solid rgba(var(--theme-border-bright), 0.25) !important;
+  border-radius: var(--glass-radius-md) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  letter-spacing: 0.02em !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  padding: 12px 24px !important;
+  min-height: 46px !important;
+  box-shadow: 0 4px 16px rgba(var(--theme-accent), 0.25), var(--glass-inset-glow) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.pf-c-button.pf-m-primary.pf-m-block:hover {
+  background: linear-gradient(135deg, rgba(var(--theme-accent), 0.60), rgba(var(--theme-accent-dark), 0.70)) !important;
+  border-color: rgba(var(--theme-link), 0.40) !important;
+  box-shadow: 0 6px 24px rgba(var(--theme-accent), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+.pf-c-button.pf-m-primary.pf-m-block:active {
+  transform: translateY(0px) scale(0.99) !important;
+  box-shadow: 0 2px 8px rgba(var(--theme-accent), 0.20) !important;
+}
+
+/* Switch / Checkbox (PF switch in login) */
+.pf-c-switch__input {
+  accent-color: var(--glass-accent) !important;
+}
+
+.pf-c-switch__label {
+  color: rgba(var(--theme-text-tint), 0.75) !important;
+  font-size: 0.875rem !important;
+}
+
+/* Custom checkbox styling (if used in other flows) */
+input[type="checkbox"]:not(.pf-c-switch__input) {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: var(--glass-l3-bg) !important;
+  border: 1px solid rgba(var(--theme-border), 0.20) !important;
+  border-radius: 5px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  transition: all 200ms ease !important;
+}
+
+input[type="checkbox"]:not(.pf-c-switch__input):checked {
+  background: rgba(var(--theme-accent), 0.40) !important;
+  border-color: rgba(var(--theme-border-bright), 0.50) !important;
+}
+
+input[type="checkbox"]:not(.pf-c-switch__input):checked::after {
+  content: '\2713' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+}
+
+/* Alerts (semantic — colors not variablized) */
+.pf-c-alert.pf-m-danger {
+  background: rgba(239, 68, 68, 0.20) !important;
+  border: 1px solid rgba(239, 68, 68, 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  backdrop-filter: blur(15px) !important;
+  color: white !important;
+}
+
+.pf-c-alert.pf-m-success {
+  background: rgba(16, 185, 129, 0.20) !important;
+  border: 1px solid rgba(16, 185, 129, 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  backdrop-filter: blur(15px) !important;
+  color: white !important;
+}
+
+.pf-c-alert.pf-m-warning {
+  background: rgba(245, 158, 11, 0.20) !important;
+  border: 1px solid rgba(245, 158, 11, 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  backdrop-filter: blur(15px) !important;
+  color: white !important;
+}
+
+.pf-c-alert.pf-m-info {
+  background: rgba(var(--theme-accent), 0.20) !important;
+  border: 1px solid rgba(var(--theme-accent), 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  backdrop-filter: blur(15px) !important;
+  color: white !important;
+}
+
+/* Login title */
+.pf-c-title {
+  color: var(--glass-text) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+
+/* =================================================================
+   SECTION 4: SSO COLORED BUTTONS
+   (brand-specific — colors not variablized)
+   ================================================================= */
+
+/* SSO common base */
+.source-button,
+.source-button-promoted {
+  backdrop-filter: var(--glass-l3-blur) !important;
+  -webkit-backdrop-filter: var(--glass-l3-blur) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  transition: all var(--transition-normal) !important;
+  min-height: 44px !important;
+}
+
+/* Discord - high specificity to override .pf-c-button.pf-m-primary.pf-m-block */
+.pf-c-button.pf-m-primary.pf-m-block[name="source-discord"] {
+  background: rgba(88, 101, 242, 0.25) !important;
+  border: 1px solid rgba(88, 101, 242, 0.40) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  background-image: none !important;
+}
+
+.pf-c-button.pf-m-primary.pf-m-block[name="source-discord"]:hover {
+  background: rgba(88, 101, 242, 0.40) !important;
+  border-color: rgba(88, 101, 242, 0.55) !important;
+  box-shadow: 0 0 24px rgba(88, 101, 242, 0.25) !important;
+  transform: translateY(-1px) !important;
+  background-image: none !important;
+}
+
+/* Plex - high specificity */
+.pf-c-button.pf-m-primary.pf-m-block[name="source-plex"] {
+  background: rgba(229, 160, 13, 0.20) !important;
+  border: 1px solid rgba(229, 160, 13, 0.35) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  background-image: none !important;
+}
+
+.pf-c-button.pf-m-primary.pf-m-block[name="source-plex"]:hover {
+  background: rgba(229, 160, 13, 0.35) !important;
+  border-color: rgba(229, 160, 13, 0.50) !important;
+  box-shadow: 0 0 24px rgba(229, 160, 13, 0.22) !important;
+  transform: translateY(-1px) !important;
+  background-image: none !important;
+}
+
+/* Security Key / Passwordless */
+a[name="passwordless"].pf-c-button {
+  background: rgba(var(--sso-webauthn), 0.15) !important;
+  border: 1px solid rgba(var(--sso-webauthn), 0.30) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: var(--glass-l3-blur) !important;
+  -webkit-backdrop-filter: var(--glass-l3-blur) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  transition: all var(--transition-normal) !important;
+  text-decoration: none !important;
+}
+
+a[name="passwordless"].pf-c-button:hover {
+  background: rgba(var(--sso-webauthn), 0.30) !important;
+  border-color: rgba(var(--sso-webauthn), 0.45) !important;
+  box-shadow: 0 0 20px rgba(var(--sso-webauthn), 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ---------------------------------------------------------------
+   SSO BUTTON TEMPLATE — Copy this block to add a new provider.
+   Replace {SLUG} and {R}, {G}, {B} with your values.
+   Find the slug: inspect the login page, look for name="source-xxx"
+
+   .pf-c-button.pf-m-primary.pf-m-block[name="source-{SLUG}"] {
+     background: rgba({R}, {G}, {B}, 0.25) !important;
+     border: 1px solid rgba({R}, {G}, {B}, 0.40) !important;
+     color: rgba(255, 255, 255, 0.95) !important;
+     background-image: none !important;
+   }
+   .pf-c-button.pf-m-primary.pf-m-block[name="source-{SLUG}"]:hover {
+     background: rgba({R}, {G}, {B}, 0.40) !important;
+     border-color: rgba({R}, {G}, {B}, 0.55) !important;
+     box-shadow: 0 0 24px rgba({R}, {G}, {B}, 0.25) !important;
+     transform: translateY(-1px) !important;
+     background-image: none !important;
+   }
+
+   Common provider colors (R, G, B):
+   Google     66, 133, 244    Microsoft  0, 164, 239
+   GitHub     110, 64, 201    GitLab     252, 109, 38
+   Apple      162, 170, 173   Facebook   24, 119, 242
+   Slack      74, 21, 75      Okta       0, 125, 193
+   SAML       255, 102, 0     LDAP       91, 155, 213
+   --------------------------------------------------------------- */
+
+/* Generic fallback for other SSO sources */
+.source-button:not([name="source-discord"]):not([name="source-plex"]),
+.source-button-promoted:not([name="source-discord"]):not([name="source-plex"]) {
+  background: var(--glass-l3-bg) !important;
+  border: 1px solid rgba(var(--theme-border), 0.18) !important;
+  color: var(--glass-text) !important;
+}
+
+/* Divider "Or" */
+ak-divider {
+  color: rgba(var(--theme-text-muted-tint), 0.50) !important;
+  --ak-divider--Color: rgba(var(--theme-border), 0.12) !important;
+}
+
+
+/* =================================================================
+   SECTION 5: FLOW CARD SHADOW (Level 3, defensive)
+   PF variables cascade + direct selectors if CSS propagated
+   ================================================================= */
+
+.pf-c-login__main-header {
+  background: transparent !important;
+  color: var(--glass-text) !important;
+}
+
+.pf-c-login__main-body {
+  background: transparent !important;
+  color: var(--glass-text) !important;
+}
+
+.pf-c-login__main-footer {
+  background: transparent !important;
+  color: var(--glass-text) !important;
+}
+
+
+/* =================================================================
+   SECTION 6: CONSENT BUTTONS (Yes/No flows)
+   (semantic — colors not variablized)
+   ================================================================= */
+
+.pf-c-form__actions {
+  display: flex !important;
+  gap: 15px !important;
+  margin-top: 20px !important;
+}
+
+.pf-c-form__actions button:first-child {
+  background: linear-gradient(135deg, rgba(var(--consent-grant), 0.35), rgba(5, 150, 105, 0.45)) !important;
+  border: 1.5px solid rgba(var(--consent-grant), 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  padding: 12px 28px !important;
+  min-width: 100px !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 16px rgba(var(--consent-grant), 0.20) !important;
+}
+
+.pf-c-form__actions button:first-child:hover {
+  background: linear-gradient(135deg, rgba(var(--consent-grant), 0.50), rgba(5, 150, 105, 0.60)) !important;
+  box-shadow: 0 6px 24px rgba(var(--consent-grant), 0.30) !important;
+  transform: translateY(-1px) !important;
+}
+
+.pf-c-form__actions button:last-child {
+  background: rgba(var(--consent-deny), 0.20) !important;
+  border: 1.5px solid rgba(var(--consent-deny), 0.30) !important;
+  border-radius: var(--glass-radius-md) !important;
+  color: rgba(255, 255, 255, 0.90) !important;
+  font-weight: 600 !important;
+  padding: 12px 28px !important;
+  min-width: 100px !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.pf-c-form__actions button:last-child:hover {
+  background: rgba(var(--consent-deny), 0.35) !important;
+  border-color: rgba(var(--consent-deny), 0.45) !important;
+  box-shadow: 0 0 20px rgba(var(--consent-deny), 0.18) !important;
+  transform: translateY(-1px) !important;
+}
+
+
+/* =================================================================
+   SECTION 7: LIBRARY CARDS (via ::part())
+   ================================================================= */
+
+ak-library-impl::part(card) {
+  border-radius: var(--glass-radius) !important;
+  background: rgba(var(--theme-tint), 0.30) !important;
+  backdrop-filter: blur(14px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+}
+
+ak-library-impl::part(card):hover {
+  transform: translateY(-2px) !important;
+  background: rgba(var(--theme-tint-l2), 0.40) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 25px rgba(var(--theme-accent), 0.12) !important;
+}
+
+ak-library-impl::part(card-title) {
+  color: var(--glass-text) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+ak-library-impl::part(search-input) {
+  background: var(--glass-l3-bg) !important;
+  border: 1px solid rgba(var(--theme-border), 0.15) !important;
+  border-radius: 14px !important;
+  color: var(--glass-text) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  padding: 10px 16px !important;
+  font-size: 0.9375rem !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: var(--glass-inset-glow) !important;
+}
+
+ak-library-impl::part(search-input):focus {
+  border-color: rgba(var(--theme-border-bright), 0.40) !important;
+  box-shadow: 0 0 0 3px rgba(var(--theme-accent), 0.12) !important;
+  background: rgba(var(--theme-tint-l3), 0.40) !important;
+}
+
+ak-library-impl::part(search-input)::placeholder {
+  color: rgba(var(--theme-text-muted-tint), 0.40) !important;
+}
+
+ak-library-impl::part(app-group-header) {
+  color: rgba(255, 255, 255, 0.90) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  font-size: 1.1rem !important;
+}
+
+
+/* =================================================================
+   SECTION 8: HEADER & NAVIGATION
+   ================================================================= */
+
+/* Main header (logo/nav) — exclude .pf-c-content which is the "My applications" bar */
+.pf-c-page__header:not(.pf-c-content) {
+  background: rgba(var(--theme-tint-dark), 0.60) !important;
+  backdrop-filter: blur(18px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+  border-bottom: 1px solid rgba(var(--theme-border), 0.10) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* "My applications" bar (in ak-library-impl) — transparent, integrated */
+.pf-c-page__header.pf-c-content {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding-bottom: 8px !important;
+}
+
+/* "My applications" title — readability on busy background */
+.pf-c-page__title {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.4rem !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.pf-c-page__header-tools {
+  background: transparent !important;
+  gap: 12px !important;
+  padding-right: 10px !important;
+}
+
+/* Header icon buttons - clean reset */
+.pf-c-page__header .pf-c-button.pf-m-plain,
+.pf-c-page__header .pf-c-button.pf-m-plain:hover,
+.pf-c-page__header .pf-c-button.pf-m-plain:focus,
+.pf-c-page__header .pf-c-button.pf-m-plain:active {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+}
+
+.pf-c-page__header .pf-c-button.pf-m-plain::after {
+  content: none !important;
+}
+
+/* Header icon animation */
+.pf-c-page__header .pf-c-button.pf-m-plain > i,
+.pf-c-page__header .pf-c-button.pf-m-plain > svg,
+.pf-c-page__header .pf-c-button.pf-m-plain > img {
+  display: inline-block;
+  transform: translateZ(0) scale(1);
+  transition: transform var(--transition-fast) !important;
+  transform-origin: center;
+}
+
+.pf-c-page__header .pf-c-button.pf-m-plain:hover > i,
+.pf-c-page__header .pf-c-button.pf-m-plain:hover > svg,
+.pf-c-page__header .pf-c-button.pf-m-plain:hover > img {
+  transform: scale(1.14);
+}
+
+.pf-c-page__header .pf-c-button.pf-m-plain:active > i,
+.pf-c-page__header .pf-c-button.pf-m-plain:active > svg,
+.pf-c-page__header .pf-c-button.pf-m-plain:active > img {
+  transform: scale(0.92);
+}
+
+/* Admin header button */
+.pf-c-page__header .pf-c-button.pf-m-secondary,
+.pf-c-page__header .pf-c-button.pf-m-secondary:hover,
+.pf-c-page__header .pf-c-button.pf-m-secondary:focus,
+.pf-c-page__header .pf-c-button.pf-m-secondary:active {
+  --pf-c-button--after--BorderWidth: 0 !important;
+  --pf-c-button--m-secondary--after--BorderColor: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.pf-c-page__header .pf-c-button.pf-m-secondary::after {
+  content: none !important;
+}
+
+/* Avatar header */
+.pf-c-page__header-tools .pf-c-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  object-fit: cover !important;
+  vertical-align: middle !important;
+  align-self: center !important;
+  margin-left: 4px !important;
+}
+
+/* Logo drop shadow (duplicate kept for shadow DOM reach) */
+.pf-c-brand {
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4)) !important;
+}
+
+
+/* =================================================================
+   SECTION 9: DRAWERS (Notification, API)
+   ================================================================= */
+
+.pf-c-drawer__panel,
+.pf-c-notification-drawer {
+  background: rgba(var(--theme-tint-dark), 0.85) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+  border-left: 1px solid rgba(var(--theme-border), 0.12) !important;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.pf-c-notification-drawer__header {
+  border-bottom: 1px solid rgba(var(--theme-border), 0.10) !important;
+  color: var(--glass-text) !important;
+}
+
+.pf-c-notification-drawer__list-item {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: var(--glass-text-secondary) !important;
+}
+
+.pf-c-notification-drawer__list-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* =================================================================
+   SECTION 10: DROPDOWN MENUS
+   ================================================================= */
+
+.pf-c-dropdown__menu {
+  background: rgba(var(--theme-tint-dark), 0.85) !important;
+  backdrop-filter: blur(20px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
+  border: 1px solid rgba(var(--theme-border), 0.12) !important;
+  border-radius: var(--glass-radius-md) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+  padding: 4px !important;
+}
+
+.pf-c-dropdown__menu-item {
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: background var(--transition-fast) !important;
+}
+
+.pf-c-dropdown__menu-item:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+
+
+/* =================================================================
+   SECTION 11: GLOBAL TEXT & HEADINGS
+   ================================================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--glass-text) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.pf-c-expandable-section__toggle {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+
+/* =================================================================
+   SECTION 12: GENERIC BUTTONS (non-login, non-admin)
+   ================================================================= */
+
+.pf-c-button.pf-m-link,
+.pf-c-button.pf-m-secondary {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(var(--theme-border), 0.15) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  color: var(--glass-text) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.pf-c-button.pf-m-link:hover,
+.pf-c-button.pf-m-secondary:hover {
+  background: rgba(var(--theme-accent), 0.15) !important;
+  border-color: rgba(var(--theme-border-bright), 0.30) !important;
+  transform: translateY(-1px) !important;
+}
+
+
+/* =================================================================
+   SECTION 13: SCROLLBAR
+   ================================================================= */
+
+* { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) transparent; }
+*::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
+*::-webkit-scrollbar-track { background: var(--sb-track); border-radius: var(--sb-radius); margin: 4px; }
+*::-webkit-scrollbar-thumb {
+  background-color: var(--sb-thumb);
+  border-radius: var(--sb-radius);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background-color: var(--sb-thumb-hover); }
+*::-webkit-scrollbar-thumb:active { background-color: var(--sb-thumb-active); }
+*::-webkit-scrollbar-corner { background: transparent; }
+
+
+/* =================================================================
+   SECTION 14: ADMIN HOTFIX
+   Reset glass variables to standard PF values
+   ================================================================= */
+
+:host(ak-interface-admin) {
+  --glass-l1-bg: var(--pf-global--BackgroundColor--100, #151515) !important;
+  --glass-l2-bg: var(--pf-global--BackgroundColor--200, #1a1a1a) !important;
+  --glass-l3-bg: var(--pf-global--BackgroundColor--200, #1a1a1a) !important;
+  --glass-l1-blur: none !important;
+  --glass-l2-blur: none !important;
+  --glass-l3-blur: none !important;
+  --glass-border: none !important;
+  --glass-border-hover: none !important;
+  --glass-shadow: none !important;
+  --glass-shadow-hover: none !important;
+  --glass-shadow-container: none !important;
+  --glass-radius: 0px !important;
+  --glass-radius-md: 0px !important;
+  --glass-radius-sm: 0px !important;
+  --glass-inset-glow: none !important;
+}
+
+:host(ak-interface-admin) .pf-c-page__header {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--pf-c-page__header--BackgroundColor) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+:host(ak-interface-admin) .pf-c-button.pf-m-plain {
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+}
+
+:host(ak-interface-admin) .pf-c-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:host(ak-interface-admin) .pf-c-form-control {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--pf-c-form-control--BackgroundColor) !important;
+  border: var(--pf-c-form-control--BorderTop) !important;
+  border-radius: 0 !important;
+}
+
+
+/* =================================================================
+   SECTION 15: ANIMATIONS
+   ================================================================= */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =================================================================
+   SECTION 16: ACCESSIBILITY
+   ================================================================= */
+
+/* Focus states - double ring for visibility on glass */
+*:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.80) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.30) !important;
+}
+
+input:focus-visible,
+select:focus-visible {
+  outline: none !important;
+  border-color: rgba(var(--theme-border-bright), 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(var(--theme-accent), 0.20), 0 0 12px rgba(var(--theme-accent), 0.10) !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  ak-library-impl::part(card):hover {
+    transform: none !important;
+  }
+
+  .pf-c-button:hover,
+  .source-button:hover,
+  .source-button-promoted:hover {
+    transform: none !important;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: more) {
+  :root, :host {
+    --glass-l1-bg: rgba(var(--theme-tint), 0.80);
+    --glass-l2-bg: rgba(var(--theme-tint-l2), 0.75);
+    --glass-l3-bg: rgba(var(--theme-tint-l3), 0.65);
+    --glass-border: 2px solid rgba(var(--theme-border), 0.40);
+  }
+}
+
+/* Reduced transparency */
+@media (prefers-reduced-transparency: reduce) {
+  :root, :host {
+    --glass-l1-bg: rgb(var(--theme-tint));
+    --glass-l2-bg: rgb(var(--theme-tint-l2));
+    --glass-l3-bg: rgb(var(--theme-tint-l3));
+    --glass-l1-blur: none;
+    --glass-l2-blur: none;
+    --glass-l3-blur: none;
+  }
+}
+
+
+/* =================================================================
+   SECTION 17: RESPONSIVE
+   ================================================================= */
+
+@media (max-width: 768px) {
+  :root, :host {
+    --sb-size: 8px;
+  }
+
+  .pf-c-login__main {
+    margin: 16px !important;
+    padding: 28px 20px !important;
+    border-radius: 16px !important;
+    background: rgba(var(--theme-tint), 0.75) !important;
+  }
+
+  .pf-c-page__header-tools {
+    gap: 6px !important;
+  }
+
+  .pf-c-page__header-tools .pf-c-button {
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+  .pf-c-page__header-tools .pf-c-avatar {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .pf-c-form__actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Touch targets minimum */
+  button, a.pf-c-button, .pf-c-form-control {
+    min-height: 48px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pf-c-login__main {
+    padding: 24px 16px !important;
+    border-radius: 12px !important;
+    background: rgba(var(--theme-tint), 0.85) !important;
+  }
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  ak-library-impl::part(card):hover {
+    transform: none !important;
+    background: var(--glass-l2-bg) !important;
+    border-color: rgba(var(--theme-border), 0.12) !important;
+    box-shadow: var(--glass-shadow) !important;
+  }
+}
