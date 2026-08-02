@@ -12,6 +12,12 @@
 # Ce qui reste utile, et qui manquait : la detection de secrets, bloquante et lisible.
 include:
   - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/gitleaks-scan@v2.0.1
+    inputs:
+      # PAS le defaut .pre : les jobs de .pre et .post ne s'executent QUE s'il existe
+      # au moins un autre job dans le pipeline. Ce depot n'ayant que ce seul job, un
+      # pipeline uniquement compose de .pre est considere comme VIDE par GitLab, qui
+      # refuse alors de le creer.
+      stage: lint
 
 # Les rules par defaut du composant couvrent les merge requests, la branche par
 # defaut et les tags. Sur un depot de configuration comme celui-ci, ou le travail se
