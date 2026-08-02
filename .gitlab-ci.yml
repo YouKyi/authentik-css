@@ -1,31 +1,27 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/user/application_security/sast/#available-cicd-variables
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure/
-# Dependency Scanning customization: https://docs.gitlab.com/user/application_security/dependency_scanning/#customizing-analyzer-behavior
-# Container Scanning customization: https://docs.gitlab.com/user/application_security/container_scanning/#customizing-analyzer-behavior
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ci/variables/#cicd-variable-precedence
-stages:
-- build
-- test
-- deploy
-- review
-- dast
-- staging
-- canary
-- production
-- incremental rollout 10%
-- incremental rollout 25%
-- incremental rollout 50%
-- incremental rollout 100%
-- performance
-- cleanup
-- secret-detection
-sast:
-  stage: test
+# Ce fichier remplace le boilerplate Auto-DevOps genere par l'UI GitLab.
+#
+# Pourquoi le retirer : ce depot n'a JAMAIS eu de pipeline. Le workflow:rules
+# d'Auto-DevOps ecarte les pipelines quand ni Dockerfile ni buildpack n'est detecte.
+# Les 14 stages qu'il declarait (build, deploy, review, dast, canary, production,
+# rollouts incrementaux, performance, cleanup) etaient vides, avec un risque dormant :
+# une variable de registre ou de cluster au niveau groupe aurait suffi a allumer des
+# jobs de deploiement sur ce depot.
+#
+# Le SAST n'y trouvait rien non plus : aucun langage qu'il sait analyser.
+#
+# Ce qui reste utile, et qui manquait : la detection de secrets, bloquante et lisible.
 include:
-- template: Auto-DevOps.gitlab-ci.yml
-variables:
-  SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/gitleaks-scan@v2.0.1
+
+# Les rules par defaut du composant couvrent les merge requests, la branche par
+# defaut et les tags. Sur un depot de configuration comme celui-ci, ou le travail se
+# fait sur des branches de feature sans workflow particulier, cela laisserait des
+# branches sans aucun pipeline : on elargit a toute branche.
+"catalog:gitleaks-scan":
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
+stages:
+  - lint
