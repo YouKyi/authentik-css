@@ -13,5 +13,15 @@
 include:
   - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/gitleaks-scan@v2.0.1
 
+# Les rules par defaut du composant couvrent les merge requests, la branche par
+# defaut et les tags. Sur un depot de configuration comme celui-ci, ou le travail se
+# fait sur des branches de feature sans workflow particulier, cela laisserait des
+# branches sans aucun pipeline : on elargit a toute branche.
+"catalog:gitleaks-scan":
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
 stages:
   - lint
