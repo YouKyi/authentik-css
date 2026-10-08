@@ -11,20 +11,20 @@
 #
 # Ce qui reste utile, et qui manquait : la detection de secrets, bloquante et lisible.
 include:
-  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/gitleaks-scan@v2.1.0
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/gitleaks-scan@v2.2.0
     inputs:
       # PAS le defaut .pre : les jobs de .pre et .post ne s'executent QUE s'il existe
       # au moins un autre job dans le pipeline. Ce depot n'ayant que ce seul job, un
       # pipeline uniquement compose de .pre est considere comme VIDE par GitLab, qui
       # refuse alors de le creer.
       stage: lint
-  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-vuln@v2.1.0
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-vuln@v2.2.0
     inputs:
       stage: lint
-  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-secret@v2.1.0
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-secret@v2.2.0
     inputs:
       stage: lint
-  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-license@v2.1.0
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-license@v2.2.0
     inputs:
       stage: lint
 
