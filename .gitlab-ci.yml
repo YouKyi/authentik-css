@@ -18,6 +18,9 @@ include:
       # pipeline uniquement compose de .pre est considere comme VIDE par GitLab, qui
       # refuse alors de le creer.
       stage: lint
+  - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/ggshield-scan@v3.0.0
+    inputs:
+      stage: lint
   - component: $CI_SERVER_FQDN/YouKyi-Infra/ci-infrastructure/ci-catalog/trivy-vuln@v3.0.0
     inputs:
       stage: lint
