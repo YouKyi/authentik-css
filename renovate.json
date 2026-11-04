@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>YouKyi-Infra/ci-infrastructure/renovate-config"
+    "local>youkyi-hq/platform/ci/renovate-config"
   ]
 }
